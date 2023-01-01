@@ -11,31 +11,32 @@ public:
 
   // for storing unique subsets as the digits are used to obtain a sum in unique
   // patterns of 0's and 1's
-  unordered_set<string> hs;
+  unordered_set<string> usedSubsets;
 
   // for storing current subset of digits which sum up to n
-  vector<int> curr;
+  vector<int> curr_subset_nums;
 
   // current sum in backtracking
-  int sum = 0;
+  int curr_sum = 0;
 
   // for keeping check of adding 1 digit once in a subset
-  string used = string(9, '0');
+  string currSubset = string(9, '0');
 
   string num = "123456789";
 
-  void util(int k, int n) {
+  void util(int &k, int &n) {
 
-    int i = curr.size();
+    int i = curr_subset_nums.size();
 
     // if we used exact k digits
     if (i == k) {
       // check if exact sum found and this set of digits has not been stored
-      if (n == sum and (hs.find(used) == hs.end())) {
+      if (n == curr_sum and
+          (usedSubsets.find(currSubset) == usedSubsets.end())) {
         // insert this pattern of subsets as used
-        hs.insert(used);
+        usedSubsets.insert(currSubset);
         // insert this subset
-        ans.push_back(curr);
+        ans.push_back(curr_subset_nums);
       }
       return;
     }
@@ -43,24 +44,24 @@ public:
       // extract a digit from 1-9
       int d = c - '0';
       // if digit is not used and current_sum + d does not exceed n
-      if ((!(used[d - 1] - '0')) and (sum + d) <= n) {
+      if ((!(currSubset[d - 1] - '0')) and (curr_sum + d) <= n) {
         // we have two scenarios
 
         // 1. choose the digit
-        used[d - 1] = '1'; // mark as used
-        curr.push_back(d); // insert into current subset
-        sum += d;          // update the sum
-        util(k, n);        // backtrack
+        currSubset[d - 1] = '1';       // mark as used
+        curr_subset_nums.push_back(d); // insert into current subset
+        curr_sum += d;                 // update the sum
+        util(k, n);                    // backtrack
 
         // 2. not choose the digit
-        used[d - 1] = '0'; // unmark the digit
-        curr.pop_back();   // remove from current subset
-        sum -= d;          // reset to old sum without current digit
+        currSubset[d - 1] = '0';     // unmark the digit
+        curr_subset_nums.pop_back(); // remove from current subset
+        curr_sum -= d;               // reset to old sum without current digit
       }
     }
   }
   vector<vector<int>> combinationSum3(int k, int n) {
-    curr = {};
+    curr_subset_nums = {};
     util(k, n);
     return ans;
   }
